@@ -97,6 +97,12 @@ diviora-kernel examples/research_task.json --run-dir runs \
   --approval-decision-file examples/approval_yes.json
 ```
 
+Decision memo example:
+
+```bash
+diviora-kernel examples/decision_memo_api_layer.json --run-dir runs
+```
+
 3. **Inspect artifacts**
 
 Artifacts are written under the selected run directory (for example `runs/<run_id>/`), including:
