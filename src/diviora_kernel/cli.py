@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 from diviora_kernel.execution import execute_run
@@ -27,6 +28,10 @@ def load_json(path: Path) -> dict:
 
 
 def main() -> int:
+    if sys.version_info < (3, 11):
+        print("Error: Python >= 3.11 is required.")
+        raise SystemExit(2)
+
     args = parse_args()
     task = TaskRequest.model_validate(load_json(args.task_file))
     plan = create_plan(task)
