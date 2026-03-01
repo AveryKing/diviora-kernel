@@ -1,0 +1,16 @@
+{
+  "task_id": "decision-memo-diviora-offer-pricing",
+  "title": "Diviora offer and pricing decision memo",
+  "description": "Decide Diviora’s initial offer + pricing to get first revenue fast.",
+  "task_type": "decision_memo",
+  "approval_mode": "auto",
+  "requested_by": "operator",
+  "input_data": {},
+  "domain_contract": {
+    "domain_name": "diviora_business_offer_pricing",
+    "required_concepts": ["ICP", "offer", "pricing", "distribution"],
+    "option_required_fields": ["Who it’s for", "What you deliver", "Pricing", "How you sell", "Why it wins"],
+    "recommendation_required_fields": ["price points", "easiest to sell", "30 days"],
+    "evidence_policy": "none"
+  }
+}
