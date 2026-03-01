@@ -18,7 +18,7 @@ def _task(task_id: str, approval_mode: str = "auto") -> TaskRequest:
     )
 
 
-def test_executive_lane_emits_step_result_and_artifact(tmp_path: Path) -> None:
+def test_executive_lane_creates_proposed_plan_with_real_runtime(tmp_path: Path) -> None:
     task = _task("lane-exec")
     step = PlanStep(
         step_id="step-1",
@@ -34,14 +34,16 @@ def test_executive_lane_emits_step_result_and_artifact(tmp_path: Path) -> None:
     assert len(record.step_results) == 1
     result = record.step_results[0]
     assert result.metadata["worker_type"] == "executive_deep_agent"
-    assert result.metadata["execution_mode"] == "inspection_planning"
-    assert result.artifacts
+    assert result.metadata["execution_mode"] == "inspection"
+    assert result.metadata["worker_runtime"] == "pydantic-deep"
+    assert result.metadata["requires_approval"] is False
+    assert "step_description" in result.metadata["step_inputs"]
 
     run_dir = next(tmp_path.iterdir())
-    assert (run_dir / result.artifacts[0]).exists()
+    assert (run_dir / "step-1_proposed_plan.md").exists()
 
 
-def test_research_lane_emits_kernel_compatible_result_and_artifact(tmp_path: Path) -> None:
+def test_research_lane_creates_notes_and_is_bounded_to_run_dir(tmp_path: Path) -> None:
     task = _task("lane-research")
     step = PlanStep(
         step_id="step-1",
@@ -56,8 +58,13 @@ def test_research_lane_emits_kernel_compatible_result_and_artifact(tmp_path: Pat
     assert record.outcome.final_state == FinalState.PASS
     result = record.step_results[0]
     assert result.success is True
-    assert result.metadata["worker_runtime"] == "pydantic-deepagents(stub)"
+    assert result.metadata["worker_runtime"] == "pydantic-deep"
     assert result.metadata["lane_metadata"]["inspection_only"] is True
+    assert result.metadata["lane_metadata"]["shell_execution_enabled"] is False
+    assert result.metadata["lane_metadata"]["backend_root"].startswith(str(tmp_path))
+
+    run_dir = next(tmp_path.iterdir())
+    assert (run_dir / "step-1_research_notes.md").exists()
 
 
 def test_coding_lane_respects_kernel_approval_semantics(tmp_path: Path) -> None:
@@ -115,3 +122,5 @@ def test_lane_metadata_present_in_run_record(tmp_path: Path) -> None:
     assert metadata["worker_id"] == "lane.coding.deep_agent.v1"
     assert metadata["requires_approval"] is False
     assert metadata["step_inputs"]["step_name"] == "Coding planning"
+    assert metadata["step_inputs"]["task_context_summary"]
+    assert (run_dir / "step-1_lane_memory.md").exists()

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from diviora_kernel.lanes.deep_agent_base import DeepAgentLaneWorker
 from diviora_kernel.schemas import PlanStep, TaskRequest
 
@@ -17,7 +19,7 @@ class ResearchDeepAgentWorker(DeepAgentLaneWorker):
 
     @property
     def execution_mode(self) -> str:
-        return "research_analysis"
+        return "research"
 
     @property
     def side_effect_capable(self) -> bool:
@@ -27,18 +29,17 @@ class ResearchDeepAgentWorker(DeepAgentLaneWorker):
     def default_artifact_name(self) -> str:
         return "research_notes.md"
 
-    def _run_lane(self, task: TaskRequest, step: PlanStep) -> str:
-        return (
-            f"# Research Notes: {task.title}\n\n"
-            "## Bounded Inputs\n"
-            f"- Description: {task.description}\n"
-            f"- Input data: {task.input_data}\n\n"
-            "## Options Matrix\n"
-            "| Option | Benefit | Risk |\n"
-            "|---|---|---|\n"
-            "| A | Fast delivery | Lower confidence |\n"
-            "| B | Balanced confidence | Moderate effort |\n"
-            "| C | Deep validation | Slower delivery |\n\n"
-            "## Recommendation\n"
-            f"Use option B for step '{step.step_id}' with explicit verification handoff.\n"
-        )
+    @property
+    def lane_goal(self) -> str:
+        return "Bounded research mode with shell execution disabled unless kernel approval policy allows future extension."
+
+    @property
+    def output_title(self) -> str:
+        return "Research Notes"
+
+    def _requires_approval(self, step: PlanStep) -> bool:
+        return False
+
+    def _run_lane(self, task: TaskRequest, step: PlanStep, run_dir: Path):
+        artifact_name = f"{step.step_id}_{self.default_artifact_name}"
+        return self._run_deep_agent(task=task, step=step, run_dir=run_dir, output_artifact_name=artifact_name)
