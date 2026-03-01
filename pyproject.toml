@@ -9,8 +9,9 @@ description = "Diviora kernel v0: contracts-first, human-in-the-loop, artifact-d
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-  "pydantic>=2.7",
-  "pydantic-ai>=0.0.16",
+  "pydantic>=2",
+  "pydantic-ai",
+  "pydantic-deep",
 ]
 
 [project.optional-dependencies]

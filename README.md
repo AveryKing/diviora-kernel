@@ -43,27 +43,32 @@ Final states:
 
 A **lane** is a bounded worker implementation that executes one `PlanStep` and must return a canonical `StepResult`.
 
-Deep-agent lanes are integrated as adapters under `src/diviora_kernel/lanes/` and never replace kernel authority:
+Deep-agent lanes now use the real `pydantic-deep` runtime (`pydantic_deep`) under kernel authority:
 
 - Kernel contracts (`schemas.py`) remain canonical truth.
 - Run ledger (`run_record.json`) remains canonical truth.
 - Artifacts are explicit and inspectable.
-- Lane-local runtime/memory is non-canonical and audit-only metadata.
+- Lane-local runtime/memory is non-canonical and written as `*_lane_memory.md` audit artifacts.
+
+Bounding rules for all deep-agent lanes:
+
+- Backend is rooted to the current `run_dir` only.
+- Shell execution is disabled by default.
+- Filesystem tools are disabled by default in v0 lane mode.
+- Any side-effectful step still goes through kernel approval mapping (`approval_mode=manual` requires explicit approval).
 
 Available deep-agent lanes:
 
-- `ExecutiveDeepAgentWorker`: inspection/planning-oriented lane for artifacts like `proposed_plan.md`, decision framing, and status summaries.
-- `ResearchDeepAgentWorker`: bounded research synthesis lane for artifacts like `research_notes.md`, option matrices, and recommendations.
-- `CodingDeepAgentWorker`: bounded coding-planning lane for artifacts like `code_plan.md` and implementation notes; side-effectful steps still require kernel approval gating.
+- `ExecutiveDeepAgentWorker`: inspection-only lane for `proposed_plan.md`.
+- `ResearchDeepAgentWorker`: research lane for `research_notes.md`.
+- `CodingDeepAgentWorker`: coding-planning lane for `code_plan.md`.
 
 Each lane emits metadata in `StepResult.metadata` including `worker_id`, `worker_type`, `worker_runtime`, `execution_mode`, `requires_approval`, and `step_inputs`.
 
 ## Install
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e '.[dev]'
+python -m pip install -e ".[dev]"
 ```
 
 ## Usage
@@ -95,6 +100,7 @@ Each run writes an inspectable run folder containing:
 - `plan.json`
 - `approval_decision.json` (if supplied)
 - step artifacts (LLM, shell, and lane outputs)
+- lane memory artifacts (`*_lane_memory.md`)
 - `verification.json`
 - `final_outcome.json`
 - `run_record.json`
@@ -104,4 +110,4 @@ Each run writes an inspectable run folder containing:
 - Add new task types in `planning.py`.
 - Add worker lanes under `workers/` or `lanes/`.
 - Harden verification checks in `verification.py`.
-- Replace deep-agent stub runtime with real `pydantic-deepagents` adapter in `lanes/deep_agent_base.py`.
+- Extend deep-agent tooling only with explicit kernel approval mappings.

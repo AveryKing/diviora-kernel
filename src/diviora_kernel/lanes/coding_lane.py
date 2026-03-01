@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from diviora_kernel.lanes.deep_agent_base import DeepAgentLaneWorker
 from diviora_kernel.schemas import PlanStep, TaskRequest
 
@@ -27,15 +29,14 @@ class CodingDeepAgentWorker(DeepAgentLaneWorker):
     def default_artifact_name(self) -> str:
         return "code_plan.md"
 
-    def _run_lane(self, task: TaskRequest, step: PlanStep) -> str:
-        return (
-            f"# Code Plan: {task.title}\n\n"
-            "## Scope\n"
-            f"{task.description}\n\n"
-            "## Proposed Changes\n"
-            "1. Update typed interfaces first.\n"
-            "2. Implement minimal adapter logic second.\n"
-            "3. Verify behavior with focused tests.\n\n"
-            "## Implementation Notes\n"
-            f"Prepared bounded coding output for step '{step.step_id}'.\n"
-        )
+    @property
+    def lane_goal(self) -> str:
+        return "Coding planning mode by default. No shell execution. Approved side effects are future-gated and run-dir bounded."
+
+    @property
+    def output_title(self) -> str:
+        return "Code Plan"
+
+    def _run_lane(self, task: TaskRequest, step: PlanStep, run_dir: Path):
+        artifact_name = f"{step.step_id}_{self.default_artifact_name}"
+        return self._run_deep_agent(task=task, step=step, run_dir=run_dir, output_artifact_name=artifact_name)

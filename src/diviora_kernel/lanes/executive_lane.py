@@ -5,7 +5,7 @@ from diviora_kernel.schemas import PlanStep, TaskRequest
 
 
 class ExecutiveDeepAgentWorker(DeepAgentLaneWorker):
-    """Chief-of-staff style lane for bounded planning and status framing."""
+    """Chief-of-staff lane for bounded inspection/planning output."""
 
     @property
     def worker_id(self) -> str:
@@ -17,7 +17,7 @@ class ExecutiveDeepAgentWorker(DeepAgentLaneWorker):
 
     @property
     def execution_mode(self) -> str:
-        return "inspection_planning"
+        return "inspection"
 
     @property
     def side_effect_capable(self) -> bool:
@@ -27,15 +27,17 @@ class ExecutiveDeepAgentWorker(DeepAgentLaneWorker):
     def default_artifact_name(self) -> str:
         return "proposed_plan.md"
 
-    def _run_lane(self, task: TaskRequest, step: PlanStep) -> str:
-        return (
-            f"# Proposed Plan for {task.title}\n\n"
-            "## Objective\n"
-            f"{task.description}\n\n"
-            "## Decisions\n"
-            "1. Keep kernel contracts as canonical authority.\n"
-            "2. Sequence execution into bounded and auditable steps.\n"
-            "3. Escalate side effects through approval semantics only.\n\n"
-            "## Current Status\n"
-            f"Prepared executive lane output for step '{step.step_id}'.\n"
-        )
+    @property
+    def lane_goal(self) -> str:
+        return "Inspection/planning only. No shell execution and no external side effects."
+
+    @property
+    def output_title(self) -> str:
+        return "Proposed Plan"
+
+    def _requires_approval(self, step: PlanStep) -> bool:
+        return False
+
+    def _run_lane(self, task: TaskRequest, step: PlanStep, run_dir):
+        artifact_name = f"{step.step_id}_{self.default_artifact_name}"
+        return self._run_deep_agent(task=task, step=step, run_dir=run_dir, output_artifact_name=artifact_name)
