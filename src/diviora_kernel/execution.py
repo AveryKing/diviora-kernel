@@ -60,7 +60,7 @@ def execute_run(
         result = worker.execute(task=task, step=step, run_dir=run_dir)
         step_results.append(result)
 
-    verification = verify_run(plan=plan, step_results=step_results)
+    verification = verify_run(plan=plan, step_results=step_results, task=task)
     outcome = create_outcome(verification=verification, step_results=step_results)
     record = create_run_record(
         run_id=run_id,

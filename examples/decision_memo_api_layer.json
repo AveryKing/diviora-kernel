@@ -1,0 +1,13 @@
+{
+  "task_id": "decision-memo-001",
+  "title": "API layer migration decision memo",
+  "description": "Options + risks for adding an API layer to phase out stored procedures in a PHP 8.3 system; include pragmatic path, tech options, and migration plan.",
+  "task_type": "decision_memo",
+  "approval_mode": "auto",
+  "requested_by": "architecture-team",
+  "input_data": {
+    "platform": "PHP 8.3",
+    "current_pattern": "stored procedures",
+    "goal": "phase to API-driven domain boundaries"
+  }
+}

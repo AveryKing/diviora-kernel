@@ -45,6 +45,17 @@ def create_plan(task: TaskRequest) -> Plan:
             ),
         ]
         rationale = "Code tasks require explicit planning plus bounded command execution."
+    elif task_type == TaskType.DECISION_MEMO.value:
+        steps = [
+            PlanStep(
+                step_id="step-1",
+                name="Draft decision memo",
+                description="Create a polished, client-ready markdown memo as the primary artifact.",
+                worker_type=WorkerType.LLM,
+                prompt=_decision_memo_prompt(task),
+            )
+        ]
+        rationale = "Decision memo tasks produce a single polished artifact with strict section requirements."
     else:
         raise ValueError(f"Unsupported task type: {task.task_type}")
 
@@ -68,4 +79,14 @@ def _code_prompt(task: TaskRequest) -> str:
         f"Task description: {task.description}. "
         f"Input data: {task.input_data}. "
         "Return assumptions, constraints, and a short implementation plan."
+    )
+
+
+def _decision_memo_prompt(task: TaskRequest) -> str:
+    return (
+        "You are preparing a client-ready decision memo in markdown. "
+        f"Task title: {task.title}. "
+        f"Task description: {task.description}. "
+        f"Input data: {task.input_data}. "
+        "Return a polished memo with clear options, one recommendation, and a phased implementation plan."
     )

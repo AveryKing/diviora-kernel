@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 class TaskType(str, Enum):
     RESEARCH_REPORT = "research_report"
     CODE_TASK = "code_task"
+    DECISION_MEMO = "decision_memo"
 
 
 class ApprovalMode(str, Enum):
