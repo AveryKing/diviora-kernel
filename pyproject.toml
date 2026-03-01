@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "diviora-kernel"
+version = "0.1.0"
+description = "Diviora kernel v0: contracts-first, human-in-the-loop, artifact-driven AI execution"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "pydantic>=2.7",
+  "pydantic-ai>=0.0.16",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+]
+
+[project.scripts]
+diviora-kernel = "diviora_kernel.cli:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+addopts = "-q"
+
+[tool.setuptools.packages.find]
+where = ["src"]
