@@ -83,10 +83,12 @@ def _code_prompt(task: TaskRequest) -> str:
 
 
 def _decision_memo_prompt(task: TaskRequest) -> str:
+    domain_contract = task.domain_contract.model_dump() if task.domain_contract else None
     return (
         "You are preparing a client-ready decision memo in markdown. "
         f"Task title: {task.title}. "
         f"Task description: {task.description}. "
         f"Input data: {task.input_data}. "
+        f"Domain contract: {domain_contract}. "
         "Return a polished memo with clear options, one recommendation, and a phased implementation plan."
     )

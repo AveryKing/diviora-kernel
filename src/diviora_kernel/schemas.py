@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -35,6 +35,16 @@ class FinalState(str, Enum):
     PARTIAL = "PARTIAL"
 
 
+class DomainContract(BaseModel):
+    domain_name: str
+    required_sections: list[str] = Field(default_factory=list)
+    required_concepts: list[str] = Field(default_factory=list)
+    option_required_fields: list[str] = Field(default_factory=list)
+    recommendation_required_fields: list[str] = Field(default_factory=list)
+    evidence_policy: Literal["none", "citations_or_unknown"] = "none"
+    rubric: dict[str, str] | None = None
+
+
 class TaskRequest(BaseModel):
     task_id: str
     title: str
@@ -43,6 +53,7 @@ class TaskRequest(BaseModel):
     approval_mode: ApprovalMode = ApprovalMode.MANUAL
     requested_by: str = "unknown"
     input_data: dict[str, Any] = Field(default_factory=dict)
+    domain_contract: DomainContract | None = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
