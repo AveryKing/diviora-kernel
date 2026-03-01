@@ -1,0 +1,11 @@
+{
+  "task_id": "code-001",
+  "title": "Assess current Python runtime",
+  "description": "Collect runtime signal for local execution environment.",
+  "task_type": "code_task",
+  "approval_mode": "auto",
+  "requested_by": "kernel-ci",
+  "input_data": {
+    "goal": "capture runtime metadata"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "task_id": "research-001",
+  "title": "Summarize incident response automation trends",
+  "description": "Produce a short report focused on practical implementation patterns.",
+  "task_type": "research_report",
+  "approval_mode": "manual",
+  "requested_by": "product-team",
+  "input_data": {
+    "scope": "security operations",
+    "audience": "engineering leaders"
+  }
+}
