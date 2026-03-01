@@ -7,6 +7,9 @@ from diviora_kernel.approvals import can_proceed, requires_approval
 from diviora_kernel.artifacts import create_run_dir, write_json
 from diviora_kernel.ledger import create_outcome, create_run_record
 from diviora_kernel.schemas import ApprovalDecision, FinalState, Plan, RunOutcome, RunRecord, StepResult, TaskRequest
+from diviora_kernel.lanes.coding_lane import CodingDeepAgentWorker
+from diviora_kernel.lanes.executive_lane import ExecutiveDeepAgentWorker
+from diviora_kernel.lanes.research_lane import ResearchDeepAgentWorker
 from diviora_kernel.verification import verify_run
 from diviora_kernel.workers.llm_worker import LLMWorker
 from diviora_kernel.workers.shell_worker import ShellWorker
@@ -23,7 +26,13 @@ def execute_run(
     step_results: list[StepResult] = []
     approval_mode = getattr(task.approval_mode, "value", task.approval_mode)
 
-    workers = {"llm": LLMWorker(), "shell": ShellWorker()}
+    workers = {
+        "llm": LLMWorker(),
+        "shell": ShellWorker(),
+        "executive_deep_agent": ExecutiveDeepAgentWorker(),
+        "research_deep_agent": ResearchDeepAgentWorker(),
+        "coding_deep_agent": CodingDeepAgentWorker(),
+    }
 
     for step in plan.steps:
         if requires_approval(step.side_effectful, approval_mode) and not can_proceed(approval_decision):
