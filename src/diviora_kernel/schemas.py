@@ -103,3 +103,16 @@ class RunRecord(BaseModel):
     outcome: RunOutcome
     started_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     ended_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class PackTaskEntry(BaseModel):
+    file: str
+    title: str
+    task_type: TaskType
+
+
+class PackManifest(BaseModel):
+    name: str
+    created_at: datetime
+    goal: str
+    tasks: list[PackTaskEntry]

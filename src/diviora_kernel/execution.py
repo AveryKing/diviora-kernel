@@ -15,14 +15,14 @@ from diviora_kernel.workers.llm_worker import LLMWorker
 from diviora_kernel.workers.shell_worker import ShellWorker
 
 
-def execute_run(
+def execute_run_in_dir(
     task: TaskRequest,
     plan: Plan,
-    base_run_dir: Path,
+    run_dir: Path,
     approval_decision: ApprovalDecision | None = None,
 ) -> RunRecord:
     run_id = str(uuid4())
-    run_dir = create_run_dir(base_run_dir, task.task_id)
+    run_dir.mkdir(parents=True, exist_ok=True)
     step_results: list[StepResult] = []
     approval_mode = getattr(task.approval_mode, "value", task.approval_mode)
 
@@ -81,3 +81,13 @@ def execute_run(
     write_json(run_dir / "run_record.json", record.model_dump(mode="json"))
 
     return record
+
+
+def execute_run(
+    task: TaskRequest,
+    plan: Plan,
+    base_run_dir: Path,
+    approval_decision: ApprovalDecision | None = None,
+) -> RunRecord:
+    run_dir = create_run_dir(base_run_dir, task.task_id)
+    return execute_run_in_dir(task=task, plan=plan, run_dir=run_dir, approval_decision=approval_decision)
