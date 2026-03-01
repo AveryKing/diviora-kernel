@@ -17,8 +17,9 @@ Diviora Kernel is a contracts-first, human-in-the-loop, artifact-driven AI execu
 - `planning.py`: Typed plan creation from `TaskRequest`.
 - `approvals.py`: Approval gating logic.
 - `execution.py`: Run orchestration and worker dispatch.
-- `workers/llm_worker.py`: Typed LLM lane via PydanticAI.
-- `workers/shell_worker.py`: Bounded shell lane with allowlist.
+- `workers/llm_worker.py`: Typed LLM worker.
+- `workers/shell_worker.py`: Bounded shell worker with allowlist.
+- `lanes/`: Deep-agent lane adapters that remain subordinate to kernel contracts.
 - `verification.py`: Post-execution verification checks.
 - `ledger.py`: Outcome and canonical run-record builder.
 - `artifacts.py`: Filesystem artifact writing helpers.
@@ -37,6 +38,25 @@ Diviora Kernel is a contracts-first, human-in-the-loop, artifact-driven AI execu
 
 Final states:
 `PASS`, `FAIL`, `BLOCKED`, `REFUSED`, `NEEDS_APPROVAL`, `PARTIAL`.
+
+## Deep-Agent Worker Lanes
+
+A **lane** is a bounded worker implementation that executes one `PlanStep` and must return a canonical `StepResult`.
+
+Deep-agent lanes are integrated as adapters under `src/diviora_kernel/lanes/` and never replace kernel authority:
+
+- Kernel contracts (`schemas.py`) remain canonical truth.
+- Run ledger (`run_record.json`) remains canonical truth.
+- Artifacts are explicit and inspectable.
+- Lane-local runtime/memory is non-canonical and audit-only metadata.
+
+Available deep-agent lanes:
+
+- `ExecutiveDeepAgentWorker`: inspection/planning-oriented lane for artifacts like `proposed_plan.md`, decision framing, and status summaries.
+- `ResearchDeepAgentWorker`: bounded research synthesis lane for artifacts like `research_notes.md`, option matrices, and recommendations.
+- `CodingDeepAgentWorker`: bounded coding-planning lane for artifacts like `code_plan.md` and implementation notes; side-effectful steps still require kernel approval gating.
+
+Each lane emits metadata in `StepResult.metadata` including `worker_id`, `worker_type`, `worker_runtime`, `execution_mode`, `requires_approval`, and `step_inputs`.
 
 ## Install
 
@@ -74,7 +94,7 @@ Each run writes an inspectable run folder containing:
 - `task_request.json`
 - `plan.json`
 - `approval_decision.json` (if supplied)
-- step artifacts (LLM and shell outputs)
+- step artifacts (LLM, shell, and lane outputs)
 - `verification.json`
 - `final_outcome.json`
 - `run_record.json`
@@ -82,6 +102,6 @@ Each run writes an inspectable run folder containing:
 ## Extension Points
 
 - Add new task types in `planning.py`.
-- Add worker lanes under `workers/`.
+- Add worker lanes under `workers/` or `lanes/`.
 - Harden verification checks in `verification.py`.
-- Replace test LLM model with production model in `llm_worker.py`.
+- Replace deep-agent stub runtime with real `pydantic-deepagents` adapter in `lanes/deep_agent_base.py`.

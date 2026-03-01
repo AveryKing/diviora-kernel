@@ -20,6 +20,9 @@ class ApprovalMode(str, Enum):
 class WorkerType(str, Enum):
     LLM = "llm"
     SHELL = "shell"
+    EXECUTIVE_DEEP_AGENT = "executive_deep_agent"
+    RESEARCH_DEEP_AGENT = "research_deep_agent"
+    CODING_DEEP_AGENT = "coding_deep_agent"
 
 
 class FinalState(str, Enum):
