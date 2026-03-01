@@ -65,13 +65,18 @@ Available deep-agent lanes:
 
 Each lane emits metadata in `StepResult.metadata` including `worker_id`, `worker_type`, `worker_runtime`, `execution_mode`, `requires_approval`, and `step_inputs`.
 
-## Install
+## Standard Operator Flow
+
+> Python **3.11+** is required for local runs and CI.
+
+1. **Install**
 
 ```bash
+python -m pip install -U pip
 python -m pip install -e ".[dev]"
 ```
 
-## Usage
+2. **Run examples**
 
 Auto approval (no pause):
 
@@ -92,9 +97,9 @@ diviora-kernel examples/research_task.json --run-dir runs \
   --approval-decision-file examples/approval_yes.json
 ```
 
-## Output Artifacts
+3. **Inspect artifacts**
 
-Each run writes an inspectable run folder containing:
+Artifacts are written under the selected run directory (for example `runs/<run_id>/`), including:
 
 - `task_request.json`
 - `plan.json`
@@ -104,6 +109,12 @@ Each run writes an inspectable run folder containing:
 - `verification.json`
 - `final_outcome.json`
 - `run_record.json`
+
+4. **Run tests**
+
+```bash
+python -m pytest -q
+```
 
 ## Extension Points
 
